@@ -1,0 +1,80 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #fff;
+  background: #000;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; margin: 0; background: #000; }
+button, input { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: max(18px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  background: #000;
+}
+
+.calculator {
+  width: min(100%, 430px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #000;
+  user-select: none;
+}
+
+.display {
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  padding: 8px 4px 2px;
+  overflow: hidden;
+}
+
+.display-tools { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: auto; }
+.mini-button {
+  width: 42px; height: 42px; border: 0; border-radius: 999px;
+  background: #1c1c1e; color: #b6b6ba; font-size: 18px; cursor: pointer;
+}
+.mini-button.active { background: #d4d4d2; color: #101010; }
+.mini-button:disabled { opacity: .45; cursor: default; }
+
+.expression-input {
+  width: 100%; border: 0; outline: 0; color: #b9b9bd; background: transparent;
+  text-align: right; font-size: clamp(20px, 6vw, 30px); line-height: 1.25; padding: 0;
+}
+.expression-input::placeholder { color: #747478; }
+.result {
+  display: block; min-height: 72px; color: #fff; text-align: right;
+  font-size: clamp(44px, 14vw, 68px); line-height: 1.05; letter-spacing: -.04em;
+  overflow-wrap: anywhere;
+}
+.status { min-height: 20px; color: transparent; text-align: right; font-size: 13px; line-height: 20px; }
+.status.visible { color: #8e8e93; }
+
+.keypad, .scientific-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.scientific-grid { padding-bottom: 2px; }
+.keypad button, .scientific-grid button {
+  aspect-ratio: 1; min-width: 0; border: 0; border-radius: 999px;
+  background: #333336; color: #fff; font-size: clamp(23px, 7vw, 31px);
+  cursor: pointer; transition: filter 90ms ease, transform 90ms ease;
+}
+.scientific-grid button { aspect-ratio: auto; min-height: 50px; border-radius: 18px; background: #1c1c1e; font-size: 17px; }
+.keypad button.utility { background: #a6a6a8; color: #090909; }
+.keypad button.operator { background: #ff9f0a; color: #fff; }
+.keypad button.wide { grid-column: span 2; aspect-ratio: auto; border-radius: 999px; text-align: left; padding-left: 30px; }
+.keypad button:active, .scientific-grid button:active, .mini-button:active { filter: brightness(1.35); transform: scale(.97); }
+button:focus-visible, .expression-input:focus-visible { outline: 3px solid rgba(255,255,255,.75); outline-offset: 3px; }
+.hidden-file, .camera-source {
+  position: absolute !important; width: 1px !important; height: 1px !important; opacity: 0 !important;
+  pointer-events: none !important; overflow: hidden !important; clip-path: inset(50%) !important;
+}
+@media (min-width: 700px) { .calculator { width: 390px; } .display { min-height: 230px; } }
+@media (prefers-reduced-motion: reduce) { .keypad button, .scientific-grid button { transition: none; } }
