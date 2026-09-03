@@ -23,13 +23,13 @@ button { -webkit-tap-highlight-color: transparent; }
   width: min(100%, 430px);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   background: #000;
   user-select: none;
 }
 
 .display {
-  min-height: 210px;
+  min-height: 245px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -46,35 +46,67 @@ button { -webkit-tap-highlight-color: transparent; }
 .mini-button.active { background: #d4d4d2; color: #101010; }
 .mini-button:disabled { opacity: .45; cursor: default; }
 
-.expression-input {
-  width: 100%; border: 0; outline: 0; color: #b9b9bd; background: transparent;
-  text-align: right; font-size: clamp(20px, 6vw, 30px); line-height: 1.25; padding: 0;
+.math-preview {
+  min-height: 48px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  color: #f1f1f2;
+  font-size: clamp(23px, 6vw, 32px);
+  line-height: 1.15;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
-.expression-input::placeholder { color: #747478; }
+
+.fraction {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  min-width: 34px;
+  vertical-align: middle;
+  text-align: center;
+  line-height: 1.05;
+}
+.fraction-top { padding: 0 5px 3px; border-bottom: 1.5px solid currentColor; }
+.fraction-bottom { padding: 3px 5px 0; }
+
+.expression-input {
+  width: 100%; border: 0; outline: 0; color: #919196; background: transparent;
+  text-align: right; font-size: clamp(16px, 4.8vw, 23px); line-height: 1.25; padding: 4px 0 0;
+}
+.expression-input::placeholder { color: #5f5f64; }
 .result {
-  display: block; min-height: 72px; color: #fff; text-align: right;
-  font-size: clamp(44px, 14vw, 68px); line-height: 1.05; letter-spacing: -.04em;
+  display: block; min-height: 68px; color: #fff; text-align: right;
+  font-size: clamp(42px, 13vw, 66px); line-height: 1.05; letter-spacing: -.04em;
   overflow-wrap: anywhere;
 }
 .status { min-height: 20px; color: transparent; text-align: right; font-size: 13px; line-height: 20px; }
 .status.visible { color: #8e8e93; }
 
-.keypad, .scientific-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.scientific-grid { padding-bottom: 2px; }
-.keypad button, .scientific-grid button {
+.keypad, .scientific-grid, .algebra-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.algebra-grid, .scientific-grid { padding-bottom: 2px; }
+.algebra-grid button, .scientific-grid button {
+  min-height: 50px; min-width: 0; border: 0; border-radius: 18px;
+  background: #1c1c1e; color: #fff; font-size: 19px; cursor: pointer;
+  transition: filter 90ms ease, transform 90ms ease;
+}
+.algebra-grid button:last-child { font-size: 17px; }
+.keypad button {
   aspect-ratio: 1; min-width: 0; border: 0; border-radius: 999px;
   background: #333336; color: #fff; font-size: clamp(23px, 7vw, 31px);
   cursor: pointer; transition: filter 90ms ease, transform 90ms ease;
 }
-.scientific-grid button { aspect-ratio: auto; min-height: 50px; border-radius: 18px; background: #1c1c1e; font-size: 17px; }
 .keypad button.utility { background: #a6a6a8; color: #090909; }
 .keypad button.operator { background: #ff9f0a; color: #fff; }
 .keypad button.wide { grid-column: span 2; aspect-ratio: auto; border-radius: 999px; text-align: left; padding-left: 30px; }
-.keypad button:active, .scientific-grid button:active, .mini-button:active { filter: brightness(1.35); transform: scale(.97); }
+.keypad button:active, .scientific-grid button:active, .algebra-grid button:active, .mini-button:active { filter: brightness(1.35); transform: scale(.97); }
 button:focus-visible, .expression-input:focus-visible { outline: 3px solid rgba(255,255,255,.75); outline-offset: 3px; }
 .hidden-file, .camera-source {
   position: absolute !important; width: 1px !important; height: 1px !important; opacity: 0 !important;
   pointer-events: none !important; overflow: hidden !important; clip-path: inset(50%) !important;
 }
-@media (min-width: 700px) { .calculator { width: 390px; } .display { min-height: 230px; } }
-@media (prefers-reduced-motion: reduce) { .keypad button, .scientific-grid button { transition: none; } }
+@media (min-width: 700px) { .calculator { width: 390px; } .display { min-height: 250px; } }
+@media (prefers-reduced-motion: reduce) { .keypad button, .scientific-grid button, .algebra-grid button { transition: none; } }
