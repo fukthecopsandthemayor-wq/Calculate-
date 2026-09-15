@@ -1,0 +1,33 @@
+.display { position: relative; }
+
+.ai-answer-active > .result {
+  opacity: 0;
+}
+
+.ai-question-button {
+  font-weight: 700;
+}
+
+.ai-answer-output {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 22px;
+  min-height: 68px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  color: #fff;
+  text-align: right;
+  font-size: clamp(22px, 6vw, 34px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+
+@media (max-width: 360px) {
+  .display-tools { gap: 6px; }
+  .mini-button { width: 40px; height: 40px; }
+  .ai-answer-output { font-size: 21px; }
+}
