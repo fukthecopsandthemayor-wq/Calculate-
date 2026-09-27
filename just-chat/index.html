@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1221">
+<meta name="description" content="Private one-to-one chat with saved messages and guest invite links.">
+<title>Just Chat — Private messages</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#eef4ff;background:#08101f;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:14px;background:radial-gradient(circle at 15% 0,#233c68 0,#101b31 38%,#08101f 75%)}
+main{width:min(100%,760px);height:min(860px,calc(100dvh - 28px));min-height:460px;background:#13213a;border:1px solid #385276;border-radius:22px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 28px 80px #0008}
+header{background:linear-gradient(135deg,#1b3153,#172944);padding:15px 18px;border-bottom:1px solid #3a557d;display:flex;gap:12px;align-items:center}.logo{width:43px;height:43px;display:grid;place-items:center;font-size:23px;background:#5578f1;border-radius:13px;box-shadow:0 8px 25px #5578f144}h1{font-size:19px;margin:0}h2{font-size:21px;margin:0}p{margin:0;line-height:1.55}.subtitle{font-size:12px;color:#bdd1ef;margin-top:3px}#indicator{margin-left:auto;color:#c9d9ef;font-size:12px;max-width:38%;text-align:right}
+section.screen{flex:1;min-height:0;display:flex;flex-direction:column}.panel{padding:19px;overflow-y:auto;gap:15px}.hidden{display:none!important}
+button,input,textarea{font:inherit;border-radius:11px}button{border:1px solid #627da8;background:#2b446a;color:#f7f9ff;font-weight:700;padding:10px 13px;cursor:pointer}button:hover:not(:disabled){background:#39547d}button:disabled{opacity:.5;cursor:not-allowed}button.primary{background:#5578f1;border-color:#8198ff}button.primary:hover:not(:disabled){background:#6787f7}
+input,textarea{background:#0a172b;border:1px solid #536d97;color:#f5f8ff;padding:12px;width:100%;min-width:0;outline:none}input:focus,textarea:focus{border-color:#7f9aff;box-shadow:0 0 0 3px #6a85ff22}label{display:grid;gap:6px;color:#cfddf2;font-size:13px}small,.small{color:#afc2df;font-size:12px}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.grow{flex:1}
+#status{min-height:38px;padding:10px 16px;font-size:12px;line-height:1.45;background:#203655;color:#dbe9fb;border-bottom:1px solid #355070}#status.error{color:#ffd6d6;background:#4d303b}
+#roomList{display:flex;flex-direction:column;gap:9px}.room{display:flex;gap:10px;align-items:center;justify-content:space-between;border:1px solid #3b557a;background:#162844;padding:12px;border-radius:13px}.room strong{overflow-wrap:anywhere}.room small{display:block;margin-top:3px}
+#chatHead{display:flex;flex-wrap:wrap;gap:8px;padding:11px 13px;border-bottom:1px solid #3b557a;align-items:center;background:#14253f}#chatTitle{font-weight:800;flex:1;min-width:90px;overflow-wrap:anywhere}#msgs{flex:1;min-height:0;overflow:auto;padding:17px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(#101e34,#0e1a2e)}.msg{display:flex;flex-direction:column;align-self:flex-start;max-width:84%;gap:4px}.msg.mine{align-self:flex-end;align-items:flex-end}.bubble{background:#2c4667;padding:11px 14px;border-radius:16px 16px 16px 5px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45;box-shadow:0 5px 15px #0002}.mine .bubble{background:#4f70dc;border-radius:16px 16px 5px 16px}.meta{font-size:11px;color:#aac0df;padding:0 4px}
+#composer{padding:11px;display:flex;gap:9px;border-top:1px solid #3b557a;align-items:end;background:#13243d}#composer textarea{resize:vertical;min-height:46px;max-height:135px;flex:1}#composer button{height:46px}footer{border-top:1px solid #314967;text-align:center;padding:9px;color:#9fb5d4;font-size:11px;background:#102039}.notice{border:1px solid #496489;background:#182c49;padding:12px;border-radius:12px}.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #506a90;border-radius:999px;padding:5px 9px;color:#c8d8ee;font-size:11px}a{color:#aec8ff}
+@media(max-width:600px){body{padding:0}main{height:100dvh;border-radius:0;border:0;min-height:0}.panel{padding:15px}#msgs{padding:12px}#chatHead{padding:9px}#composer{padding:9px}#indicator{max-width:42%}}
+</style>
+</head>
+<body><main>
+<header><div class="logo" aria-hidden="true">↔</div><div><h1>Just Chat</h1><div class="subtitle">Private one-to-one messages, saved online</div></div><div id="indicator">Starting…</div></header>
+<div id="status" role="status">Connecting to secure message storage…</div>
+<section id="loading" class="screen panel"><h2>Opening your chat…</h2><p class="small">Connecting securely.</p></section>
+<section id="account" class="screen panel hidden"><h2>Your account</h2><p>Create an account or sign in. Your guest still won't need an account.</p>
+<form id="loginForm" style="display:grid;gap:13px">
+<label>Email<input id="email" type="email" autocomplete="email" required></label>
+<label>Password<input id="password" type="password" autocomplete="current-password" minlength="8" maxlength="200" required></label>
+<div class="row"><button type="submit" class="primary" id="login">Sign in</button><button type="button" id="register">Create my account</button></div>
+</form><div class="notice small">Your conversations and messages are stored separately from your other websites.</div></section>
+<section id="inbox" class="screen panel hidden">
+<div class="row"><h2 class="grow">Your conversations</h2><button id="logout" type="button">Sign out</button></div>
+<p class="small">Create a conversation, then send its private invite link to one person. Replies stay here even when either person is offline.</p>
+<div class="row"><input id="roomName" class="grow" maxlength="80" placeholder="Who are you chatting with?" aria-label="Conversation name"><button id="create" class="primary" type="button">New chat</button></div>
+<div id="roomList"></div>
+</section>
+<section id="guestEntry" class="screen panel hidden"><h2>You've been invited to chat</h2><p>You don't need an account. Enter the name that should appear beside your messages.</p>
+<label>Your name<input id="guestName" autocomplete="nickname" maxlength="35" placeholder="Your name"></label><button id="join" type="button" class="primary">Open chat</button>
+<div class="notice small">Keep this invitation link private. Anyone with the link can read and send messages in this conversation.</div>
+</section>
+<section id="chat" class="screen hidden">
+<div id="chatHead"><button id="back" type="button">← Back</button><span id="chatTitle">Conversation</span><span class="pill" id="saveState">Saved online</span><button id="share" type="button" class="hidden">Copy invite link</button></div>
+<div id="msgs"><p class="small">Loading messages…</p></div>
+<form id="composer"><textarea id="draft" maxlength="2000" aria-label="Write a message" placeholder="Type a message…" required></textarea><button id="send" class="primary" type="submit">Send</button></form>
+</section>
+<footer>Guest access is controlled by the private invitation link.</footer>
+</main>
+<script>
+const DATA='https://ep-icy-base-b474sfv8.apirest.c-6.us-east-2.aws.neon.tech/neondb/rest/v1';
+const $=id=>document.getElementById(id);
+const SESSION_KEY='justchat-session-v3', EMAIL_KEY='justchat-email-v3', NAME_KEY='justchat-nickname-v3';
+let session=localStorage.getItem(SESSION_KEY)||'', accountEmail=localStorage.getItem(EMAIL_KEY)||'', room=null, roomMode='', invite='', guestName=localStorage.getItem(NAME_KEY)||'', pollTimer=null, currentMessages=[];
+function screen(id){for(const item of ['loading','account','inbox','guestEntry','chat'])$(item).classList.toggle('hidden',id!==item)}
+function status(text,isError=false){$('status').textContent=text;$('status').classList.toggle('error',isError)}
+function indicator(text){$('indicator').textContent=text}
+function clearPoll(){if(pollTimer){clearInterval(pollTimer);pollTimer=null}}
+function errorText(raw){if(!raw)return'Unexpected error';if(typeof raw==='string')return raw;return raw.message||raw.details||raw.hint||'Unexpected error'}
+async function rpc(name,payload={}){
+ const res=await fetch(`${DATA}/rpc/${name}`,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload)});
+ const raw=await res.text();let data=null;try{data=raw?JSON.parse(raw):null}catch{data=raw}
+ if(!res.ok)throw new Error(errorText(data)||`Request failed (${res.status})`);return data;
+}
+function first(data){return Array.isArray(data)?(data[0]||null):data}
+function readInvite(){const raw=(location.hash.match(/(?:^#|&)chat=([^&]+)/)||[])[1]||'';try{const v=decodeURIComponent(raw);return /^[a-f0-9]{48}$/i.test(v)?v:''}catch{return''}}
+function inviteLink(token){return location.origin+location.pathname+'#chat='+encodeURIComponent(token)}
+function displayDate(v){if(!v)return'';const d=new Date(v);return Number.isNaN(d.getTime())?'':d.toLocaleString([],{hour:'numeric',minute:'2-digit',month:'short',day:'numeric'})}
+function renderMessages(items){const el=$('msgs'),nearBottom=el.scrollHeight-el.scrollTop-el.clientHeight<150;currentMessages=items||[];el.replaceChildren();if(!currentMessages.length){const p=document.createElement('p');p.className='small';p.textContent='No messages yet. Say hello!';el.append(p);return}
+ for(const m of currentMessages){const mine=roomMode==='owner'?m.author_role==='owner':m.author_role==='guest'&&m.author_name===guestName;const row=document.createElement('div');row.className='msg'+(mine?' mine':'');const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=m.body||'';const meta=document.createElement('div');meta.className='meta';meta.textContent=(mine?'You':(m.author_name||'Guest'))+' · '+displayDate(m.created_at);row.append(bubble,meta);el.append(row)}if(nearBottom)el.scrollTop=el.scrollHeight}
+async function loadOwnerMessages(silent=false){if(!room||roomMode!=='owner')return;try{const items=await rpc('chat_owner_messages',{p_session:session,p_room:room.id});renderMessages(items||[]);$('saveState').textContent='Saved online';if(!silent)status('Messages are saved online and refresh automatically.')}catch(e){if(!silent)status(errorText(e),true)}}
+async function loadGuestMessages(silent=false){if(!room||roomMode!=='guest')return;try{const items=await rpc('chat_guest_messages',{p_invite:invite});renderMessages(items||[]);$('saveState').textContent='Saved online';if(!silent)status('Messages are saved online and refresh automatically.')}catch(e){if(!silent)status(errorText(e),true)}}
+function beginPoll(){clearPoll();pollTimer=setInterval(()=>roomMode==='owner'?loadOwnerMessages(true):loadGuestMessages(true),2500)}
+async function openOwnerRoom(r){clearPoll();room=r;roomMode='owner';screen('chat');$('chatTitle').textContent=r.title||'Private conversation';$('share').classList.remove('hidden');$('back').textContent='← Conversations';$('msgs').innerHTML='<p class="small">Loading messages…</p>';indicator(accountEmail||'Signed in');await loadOwnerMessages();beginPoll()}
+async function openGuestRoom(){clearPoll();status('Opening invitation…');try{const r=first(await rpc('chat_guest_room',{p_invite:invite}));if(!r)throw new Error('This invitation is invalid or no longer exists.');room=r;roomMode='guest';screen('chat');$('chatTitle').textContent=r.title||'Private conversation';$('share').classList.add('hidden');$('back').textContent='← Change name';indicator('Guest — no signup');await loadGuestMessages();beginPoll()}catch(e){screen('guestEntry');status(errorText(e),true)}}
+async function loadInbox(){if(!session){showAccount();return}clearPoll();screen('inbox');indicator(accountEmail||'Signed in');$('roomList').textContent='Loading conversations…';try{const rooms=await rpc('chat_list_rooms',{p_session:session});const box=$('roomList');box.replaceChildren();if(!rooms||!rooms.length){const p=document.createElement('p');p.className='small';p.textContent='No conversations yet. Tap New chat to invite someone.';box.append(p)}else for(const r of rooms){const line=document.createElement('div');line.className='room';const wrap=document.createElement('div');const label=document.createElement('strong');label.textContent=r.title||'Private conversation';const date=document.createElement('small');date.textContent=displayDate(r.created_at);wrap.append(label,date);const b=document.createElement('button');b.type='button';b.textContent='Open';b.addEventListener('click',()=>openOwnerRoom(r));line.append(wrap,b);box.append(line)}status('Create a conversation to get a private invitation link.')}catch(e){if(/Session expired/i.test(errorText(e))){clearSession();showAccount();status('Your session expired. Please sign in again.',true)}else{status(errorText(e),true);$('roomList').textContent='Could not load conversations.'}}}
+function showAccount(){clearPoll();screen('account');indicator('Sign in');$('email').value=accountEmail||'';status('Sign in or create your account. Your guest will not need one.')}
+function showGuest(){clearPoll();screen('guestEntry');indicator('Guest — no signup');$('guestName').value=guestName;status('Enter your name to read and send saved messages.')}
+function saveSession(token,email){session=token||'';accountEmail=email||'';localStorage.setItem(SESSION_KEY,session);localStorage.setItem(EMAIL_KEY,accountEmail)}
+function clearSession(){session='';accountEmail='';localStorage.removeItem(SESSION_KEY);localStorage.removeItem(EMAIL_KEY)}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('login').disabled=true;status('Signing in…');try{const d=first(await rpc('chat_login',{p_email:$('email').value.trim(),p_password:$('password').value}));if(!d?.session_token)throw new Error('Sign-in did not return a session.');saveSession(d.session_token,d.account_email);await loadInbox()}catch(e){status(errorText(e),true)}finally{$('login').disabled=false}});
+$('register').addEventListener('click',async()=>{const email=$('email').value.trim(),pass=$('password').value;if(!email||pass.length<8){status('Enter an email and a password with at least 8 characters.',true);return}$('register').disabled=true;status('Creating account…');try{const d=first(await rpc('chat_register',{p_email:email,p_password:pass}));if(!d?.session_token)throw new Error('Account creation did not return a session.');saveSession(d.session_token,d.account_email);await loadInbox()}catch(e){status(errorText(e),true)}finally{$('register').disabled=false}});
+$('logout').addEventListener('click',async()=>{const old=session;clearSession();clearPoll();try{if(old)await rpc('chat_logout',{p_session:old})}catch{}showAccount();status('Signed out.')});
+$('create').addEventListener('click',async()=>{if(!session)return;const title=$('roomName').value.trim()||'Private conversation';$('create').disabled=true;status('Creating your conversation…');try{const r=first(await rpc('chat_create_room',{p_session:session,p_title:title}));if(!r?.id)throw new Error('Conversation could not be created.');$('roomName').value='';await openOwnerRoom(r);status('Chat created. Tap Copy invite link and send it privately to your guest.')}catch(e){status(errorText(e),true)}finally{$('create').disabled=false}});
+$('join').addEventListener('click',async()=>{const n=$('guestName').value.trim();if(!n||n.length>35){status('Enter your name first.',true);return}guestName=n;localStorage.setItem(NAME_KEY,n);$('join').disabled=true;await openGuestRoom();$('join').disabled=false});
+$('back').addEventListener('click',()=>{room=null;clearPoll();roomMode==='guest'?showGuest():loadInbox()});
+$('share').addEventListener('click',async()=>{if(!room?.invite_token)return;const url=inviteLink(room.invite_token);try{await navigator.clipboard.writeText(url);status('Invitation link copied. Send it privately to your guest.')}catch{window.prompt('Copy this invitation link:',url)}});
+$('composer').addEventListener('submit',async e=>{e.preventDefault();if(!room)return;const body=$('draft').value.trim();if(!body)return;$('send').disabled=true;$('saveState').textContent='Sending…';status('Sending…');try{if(roomMode==='owner')await rpc('chat_owner_send',{p_session:session,p_room:room.id,p_body:body});else await rpc('chat_guest_send',{p_invite:invite,p_name:guestName,p_body:body});$('draft').value='';roomMode==='owner'?await loadOwnerMessages(true):await loadGuestMessages(true);status('Sent. The message is saved online.');$('draft').focus()}catch(e){$('saveState').textContent='Not sent';status('Message not sent: '+errorText(e),true)}finally{$('send').disabled=false}});
+$('draft').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('composer').requestSubmit()}});
+window.addEventListener('hashchange',()=>location.reload());
+window.addEventListener('unhandledrejection',e=>status(errorText(e.reason),true));
+(async()=>{invite=readInvite();if(invite){showGuest();return}if(session){await loadInbox();return}showAccount()})();
+</script></body></html>
